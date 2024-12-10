@@ -5,7 +5,7 @@
             "name": "GraphXY",
             "version": "1.0",
             "displayname": "GraphXY",
-            "icon": "./assets/chart.png",
+            "icon": "./assets/graph.png",
             "type": "guid://1f718843-711b-4b43-b89d-44a58550ef43",
             "start": "./control/index.html"
         },
@@ -18,7 +18,8 @@
             }
         },
         "metadata": {
-            "author": "Marco Buffa"
+            "author": "Marco Buffa",
+            "icon-author": "Becris (Flaticon) https://www.flaticon.com/free-icons/graph"
         },
         "contracts": {
             "api": {

@@ -2,33 +2,59 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Base CWC 4 training</title>
+        <title>GraphXY CWC</title>
         <link rel="stylesheet" href="css/style.css">
         <script src="libs/webcc.min.js"></script>
+        <script src="libs/chart.js"></script>
     </head>
     <body>
         <div>
             <p id="Connection">Questo CWC è in esecuzione in un <em>browser</em></p>
         </div>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
 
         <script>
-
             var wincc = false; //flag presenza runtime
 
+            var Xarray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+            var Yarray = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+
+            const mychart = new Chart(document.getElementById('myChart'), {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: [],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'linear'
+                        },
+                        x: {
+                            type: 'linear'
+                        }
+                    }
+                }
+            });
+
+            function updateChart() {
+                let lim = Xarray.length < Yarray.length ? Xarray.length : Yarray.length;
+                for (let i = 0; i < lim; i++) {
+                    mychart.data.datasets[0].data[i] = {"x": Xarray[i], "y": Yarray[i]};
+                }
+                mychart.update();
+            }
+
             //Callback nuovi parametri da WinCC
-            function dataFromWinCC(data){
-                //data.value --> nuovo valore
-                //data.key --> nome del parametro aggiornato
-                console.log("Nuovo parametro ricevuto da WinCC:");
-                console.log(data);
-				switch (data.key) {
-					case "NumberParameter":
-                            document.getElementById('NumberParameter').value = data.value;
-						break;
-					case "StringParameter":
-                            document.getElementById('StringParameter').value = data.value;
-						break;
-				}
+            function dataFromWinCC(){
+                Xarray = JSON.parse(WebCC.Properties.Xarray);
+                Yarray = JSON.parse(WebCC.Properties.Yarray);
+                updateChart();
+                console.log("Nuovi parametri ricevuti da WinCC");
 			}
 
             //connessione con WinCC
@@ -47,16 +73,18 @@
                             catch (error) {
                                 console.log(error);
                             }
-						}
-                        
+						}  
                     } else {
                         console.log("Connessione con WinCC non riuscita (sono in un browser?)");
+                        updateChart();
                     }
                 },
                 {
                     //dichiarazione di metodi, eventi e parametri (deve coincidere con il manifest!)
                     methods: {
-                        ForceRedraw: function(){},
+                        ForceRedraw: function(){
+                            mychart.update();
+                        },
                     },
                     events: [],
                     properties: {
