@@ -2,11 +2,11 @@
     "mver": "1.2.0",
     "control": {
         "identity": {
-            "name": "Base",
+            "name": "GraphXY",
             "version": "1.0",
-            "displayname": "Base CWC 4 training",
-            "icon": "./assets/learning.png",
-            "type": "guid://d722178a-239f-4be0-ab55-b24616547bd7",
+            "displayname": "GraphXY",
+            "icon": "./assets/chart.png",
+            "type": "guid://1f718843-711b-4b43-b89d-44a58550ef43",
             "start": "./control/index.html"
         },
         "environment": {
@@ -23,49 +23,19 @@
         "contracts": {
             "api": {
                 "methods": {
-                    "MethodWithNumber": {
-                        "parameters": {
-                            "NumberParameter": {
-                                "type": "number"
-                            }
-                        },
-                        "description": "Just a method delivering a number parameter"
-                    },
-                    "MethodWithString": {
-                        "parameters": {
-                            "NumberParameter": {
-                                "type": "string"
-                            }
-                        },
-                        "description": "Just a method delivering a string parameter"
+                    "ForceRedraw": {
+                        "parameters": {}
                     }
                 },
-                "events": {
-                    "EventWithNumber": {
-                        "arguments": {
-                            "NumberParameter": {
-                                "type": "number"
-                            }
-                        },
-                        "description": "Just an event delivering a number parameter"
-                    },
-                    "EventWithString": {
-                        "arguments": {
-                            "StringParameter": {
-                                "type": "string"
-                            }
-                        },
-                        "description": "Just an event delivering a string parameter"
-                    }
-                },
+                "events": {},
                 "properties": {
-                    "NumberParameter":{
-                        "type": "number",
-                        "default": 0
-                    },
-                    "StringParameter":{
+                    "Xarray":{
                         "type": "string",
-                        "default": ""
+                        "default": "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+                    },
+                    "Yarray":{
+                        "type": "string",
+                        "default": "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]"
                     }
                 }
             }
