@@ -37,10 +37,19 @@
                     "Yarray":{
                         "type": "string",
                         "default": "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]"
-                    }
+                    },
+                    "Color": {
+						"$ref": "#/control/types/Color",
+						"default": 4278227088
+					}
                 }
             }
         },
-        "types": {}
+        "types": {
+			"Color": {
+				"$id": "http://tia.siemens.com/wincc-unified/types/s/color",
+				"type": "number"
+			}
+        }
     }
 }
