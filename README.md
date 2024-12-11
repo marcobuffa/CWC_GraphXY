@@ -1,194 +1,78 @@
-# CWC_Base
+# CWC_GraphXY
 
-## A very basic (& useless) Custom Web Control (CWC) to to show how stuff works with WinCC Unified
+## A Custom Web Control (CWC) to create a X/Y chart in WinCC Unified
 
-![A graduation hat]({d722178a-239f-4be0-ab55-b24616547bd7}/assets/learning.png)
+![A simple graph]({1f718843-711b-4b43-b89d-44a58550ef43}/assets/graph.png)
 
-Icon created by [Tanah Basah - Flaticon](https://www.flaticon.com/free-icons/course")
+Icon created by [Becris - Flaticon](https://www.flaticon.com/free-icons/graph")
+
+Based on [chartJS](https://chartjs.org).
 
 ## ToDo:
 
-- [x] Get requests by customers
-- [x] Get requests by colleagues
+- [x] Get request by customers
 - [x] Find a timeslot
 - [x] Write code
-- [ ] Debug
-- [ ] Test on a Unified Comfort Panel
-- [ ] Debug again
-- [ ] Write a meaningful documentation
+- [x] Debug
+- [ ] Write documentation
 
-## How to create a CWC from this stuff:
+## How to create a CWC from this stuff (skip if you just want to download the CWC):
 
 1. Download/pull/whatever the code
-2. cd in the **{d722178a-239f-4be0-ab55-b24616547bd7}** folder
-3. Create **{d722178a-239f-4be0-ab55-b24616547bd7}.zip** file with the **{d722178a-239f-4be0-ab55-b24616547bd7}** folder content
+2. cd in the **{1f718843-711b-4b43-b89d-44a58550ef43}** folder
+3. Create **{1f718843-711b-4b43-b89d-44a58550ef43}.zip** file with the **{1f718843-711b-4b43-b89d-44a58550ef43}** folder content
 > [!IMPORTANT]
-> Do not include the **{d722178a-239f-4be0-ab55-b24616547bd7}** folder itself as root folder in the file zip!
-4. Copy the **{d722178a-239f-4be0-ab55-b24616547bd7}.zip** file in **C:\Program Files\Siemens\Automation\Portal V1x\Data\Hmi\CustomControls** folder
+> Do not include the **{1f718843-711b-4b43-b89d-44a58550ef43}** folder itself as root folder in the file zip!
+4. Copy the **{1f718843-711b-4b43-b89d-44a58550ef43}.zip** file in **C:\Program Files\Siemens\Automation\Portal V1x\Data\Hmi\CustomControls** folder
 5. Refresh the **My Controls** right side pane in the TIA Portal WinCC Unified screen editor
 6. Enjoy
 
+## How to directly download this CWC (if you are in a hurry):
+1. Download from [here]({1f718843-711b-4b43-b89d-44a58550ef43}/build/{1f718843-711b-4b43-b89d-44a58550ef43}.zip)
+2. Copy the **{1f718843-711b-4b43-b89d-44a58550ef43}.zip** file in **C:\Program Files\Siemens\Automation\Portal V1x\Data\Hmi\CustomControls** folder
+3. Refresh the **My Controls** right side pane in the TIA Portal WinCC Unified screen editor
+4. Enjoy
+
+## May I have a TIA Portal project example?
+Sure: just download it from [here]({1f718843-711b-4b43-b89d-44a58550ef43}/examples/TIAexample.zap19) (TIA V19)
+The project needs the CWC to be installed before using (follow instructions above for downloading and installing)
+
 ## Documentation:
 
-### How does this works?
-This CWC (Custom Web Control) is intended to show:
-1. the 3 data exchange mechanisms between a WinCC Unified RT and a CWC
-2. how to discriminate between CWC being executed in a browser, in TIA Portal (yes, TIA Portal does execute CWCs) or in a WinCC Unified RT
+### How to use this?
+This CWC (Custom Web Control) exposes several parameters (see the [manifest file]({1f718843-711b-4b43-b89d-44a58550ef43}/manifest.json) for details). All of them are dynamic, so you can assign static values in TIA Portal or dynamize them connecting tags, scripts, etc...
 
-### Data exchange
-A CWC is just a web page running inside an iframe in a WinCC Unified project.
+#### Xarray
+A TIA Portal empty array you can populate with how much floats as you want. It defines the values on X axis.
 
-Any client-side code can be run in a CWC, but this would be nearly useless without any data exchange mechanisms between the inner content of the CWC and the WinCC Unified RT (outside the CWC).
+#### Yarray
+A TIA Portal empty array you can populate with how much floats as you want. It defines the values on Y axis.
 
-3 mechanisms are available to get a fully bidirectional data exchange: parameters, events and methods.
+#### Color
+A TIA Portal color object (Alpha, R, G, B).
 
-#### Parameters
-This is the simplest method: number, string, or structured (not shown in this example) variables can be exchanged between WinCC Unified and the CWC. They are defined in the [manifest.json file]({d722178a-239f-4be0-ab55-b24616547bd7}/manifest.json) (see the "properties" section):
+#### Label
+This is the label shown in the legend of the chart. It's a string.
 
-```
-"properties": {
-    "NumberParameter":{
-        "type": "number",
-        "default": 0
-    },
-    "StringParameter":{
-        "type": "string",
-        "default": ""
-    }
-}
-```
+#### Thickness
+This is the chart line thickness in pixels, so it's an integer.
 
-This is a bidirectional mechanism: a parameter can be written by WinCC Unified RT and read by the CWC, or viceversa.
+#### PointSize
+This is the chart points diameter in pixels, it's also an integer.
 
-A callback mechanism is available inside the CWC in order to get notified if a new value is written by WinCC Unified (see [index.html]({d722178a-239f-4be0-ab55-b24616547bd7}/control/index.html)):
+#### AnimationTime
+This is the transition time for the chart animations, expressed in ms. To disable animations, just put a static 0 on this parameter.
 
-```
-function dataFromWinCC(data){
-    console.log("Nuovo parametro ricevuto da WinCC:");
-    console.log(data);
-    switch (data.key) {
-        case "NumberParameter":
-                document.getElementById('NumberParameter').value = data.value;
-            break;
-        case "StringParameter":
-                document.getElementById('StringParameter').value = data.value;
-            break;
-    }
-}
-```
+#### Xmin and Xmax
+These are the X axis limits (floats). To let chartJS chose limits for you, just put same values in both Xmin and Xmax, enabling autoscaling.
 
-And, later, the registration:
+#### Ymin and Ymax
+These are the Y axis limits (floats). To let chartJS chose limits for you, just put same values in both Ymin and Ymax, enabling autoscaling.
 
-```
-WebCC.onPropertyChanged.subscribe(dataFromWinCC);
-```
+#### Xlabel and Ylabel
+These are the axis labels (strings). Leave empty if you don't want labels on axis.
 
-Sending a new value to WinCC Unified is even simpler (see [index.html]({d722178a-239f-4be0-ab55-b24616547bd7}/control/index.html)):
+This CWC exposes a method too:
 
-```
-WebCC.Properties.NumberParameter = document.getElementById('NumberParameter').value;
-WebCC.Properties.StringParameter = document.getElementById('StringParameter').value;
-```
-
-#### Events
-Events can be generated by the CWC and the associated function in WinCC Unified can be projected like any standard event generated by any standard control in TIA Portal: see Properties > Events of the CWC control in the low pane of screen engineering in TIA Portal, selecting the CWC instance in the page.
-
-This is a one-direction mechanism: data can be exchanged from the CWC to WinCC Unified RT.
-
-The [manifest.json file]({d722178a-239f-4be0-ab55-b24616547bd7}/manifest.json) shall list all available events of the CWC (see the "events" section):
-
-```
-"events": {
-    "EventWithNumber": {
-        "arguments": {
-            "NumberParameter": {
-                "type": "number"
-            }
-        },
-        "description": "Just an event delivering a number parameter"
-    },
-    "EventWithString": {
-        "arguments": {
-            "StringParameter": {
-                "type": "string"
-            }
-        },
-        "description": "Just an event delivering a string parameter"
-    }
-}
-```
-
-As you can see, events can carry parameters too. Please, use just one, non-structured parameter per event. If you need a structure, just use a (json) string.
-
-Firing an event from the CWC itself is pretty simple (see [index.html]({d722178a-239f-4be0-ab55-b24616547bd7}/control/index.html)):
-
-```
-WebCC.Events.fire("EventWithNumber", document.getElementById('NumberParameter').value);
-```
-
-#### Methods
-Methods are the opposite of events: one-way direction (from WinCC Unified to TIA Portal), with an optional (one, non-structured) parameter.
-
-Calling a CWC method from WinCC Unified is a little bit more tricky. You need to create a JS script in the screen engineering of TIA Portal and associate something like this:
-
-```
-export function Button_3_OnTapped(item, x, y, modifiers, trigger) {
-    Screen.Items("Base CWC 4 training_1").MethodWithNumber(47);
-}
-```
-
-This example just calls the CWC's MethodWithNumber passing the value 47 as parameters. In this case, this is fired by tapping a standard button in WinCC Unified, but you can associate the calling function to any event in the screen execution context of WinCC Unified.
-
-Dealing with methods inside the CWC is also pretty simple (see [index.html]({d722178a-239f-4be0-ab55-b24616547bd7}/control/index.html)):
-
-```
-methods: {
-    MethodWithNumber: function(NumberParameter){
-        console.log("Chiamato metodo MethodWithNumber con parametro: " + NumberParameter);
-        document.getElementById('Method').innerHTML = "L'ultimo metodo chiamato è stato: <em>MethodWithNumber</em>"
-        document.getElementById('NumberParameter').value = NumberParameter;
-    },
-    MethodWithString: function(StringParameter){
-        console.log("Chiamato metodo MethodWithString con parametro: " + StringParameter);
-        document.getElementById('Method').innerHTML = "L'ultimo metodo chiamato è stato: <em>MethodWithString</em>"
-        document.getElementById('StringParameter').value = StringParameter;
-    }
-},
-```
-
-### Discriminate between environments
-Being able, from the CWC perspective, to discriminate the outer execution environment can be useful in order to:
-- make the debugging process simpler
-- test the CWC in a browser
-- force parameters or appareance in engineering
-- ...
-
-The WebCC library makes this quite easy. Have a look a the [index.html]({d722178a-239f-4be0-ab55-b24616547bd7}/control/index.html):
-
-```
-WebCC.start(
-    function(result) {
-        if (result) { //c'è un'istanza di WinCC in esecuzione
-            console.log("Connessione con WinCC avvenuta con successo");
-            if (WebCC.isDesignMode) { //l'istanza è di ingegneria (TIA Portal)
-                document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione in <em>ingegneria (TIA Portal)</em>";
-            } else { //l'istanza è di runtime
-                document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione nel <em>runtime</em>";
-                try {
-                    wincc = true; //attiva flag presenza runtime
-                    WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
-                } 
-                catch (error) {
-                    console.log(error);
-                }
-            }
-            
-        } else {
-            console.log("Connessione con WinCC non riuscita (sono in un browser?)");
-        }
-    },
-```
-
-The `WebCC.start` method returns true if a generic WinCC Unified rendering engine can be contacted. A false return value means the CWC is executed in a browser, just opening the index.html entry file.
-
-If a true value is returned, the `WebCC.isDesignMode` can be used to discriminate between TIA Portal rendering (true is returned) or a real WinCC Unified RT rendering engine (false is reported).
+#### ForceRedraw
+This just calls an update method on the chartJS object, with current configuration and dataset.
