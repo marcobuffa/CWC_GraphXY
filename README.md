@@ -76,3 +76,6 @@ This CWC exposes a method too:
 
 #### ForceRedraw
 This just calls an update method on the chartJS object, with current configuration and dataset.
+
+## May I ask for support on this CWC?
+Sure: just drop me an [email](mailto:marco.buffa@siemens.com).
