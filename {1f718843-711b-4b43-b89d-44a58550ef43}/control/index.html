@@ -20,6 +20,7 @@
             var Xarray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
             var Yarray = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
             var Color = 0xFF009090;
+            var Label = "Serie";
             var Thickness = 1;
             var PointSize = 5;
 
@@ -27,6 +28,7 @@
                 type: 'line',
                 data: {
                     datasets: [{
+                        label: "",
                         data: [],
                         borderWidth: 1,
                         borderColor: toColor(Color),
@@ -40,6 +42,11 @@
                         },
                         x: {
                             type: 'linear'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: !(Label.length === 0)
                         }
                     }
                 }
@@ -66,6 +73,8 @@
                 }
                 //impostazione del colore
                 mychart.data.datasets[0].borderColor = toColor(Color);
+                //impostazione dell'etichetta della serie
+                mychart.data.datasets[0].label = Label;
                 //impostazione dello spessore della linea
                 mychart.data.datasets[0].borderWidth = Thickness;
                 //impostazione della dimensione dei pallini
@@ -90,6 +99,9 @@
                     case "Color":
                         Color = WebCC.Properties.Color;
                         break;
+                    case "Label":
+                        Label = WebCC.Properties.Label;
+                        break;
                     case "Thickness":
                         Thickness = WebCC.Properties.Thickness;
                         break;
@@ -109,13 +121,13 @@
 							document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione in <em>ingegneria (TIA Portal)</em>";
 						} else { //l'istanza è di runtime
                             document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione nel <em>runtime</em>";
-							try {
-                                WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
-                            } 
-                            catch (error) {
-                                console.log(error);
-                            }
-						}  
+						}
+                        try {
+                            WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
+                        } 
+                        catch (error) {
+                            console.log(error);
+                        }
                     } else {
                         console.log("Connessione con WinCC non riuscita (sono in un browser?)");
                     }
@@ -133,6 +145,7 @@
                         Xarray: "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
                         Yarray: "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]",
                         Color: 0xFF009090,
+                        Label: "Serie",
                         Thickness: 1,
                         PointSize: 5
                     }

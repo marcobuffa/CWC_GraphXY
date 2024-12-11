@@ -42,6 +42,10 @@
 						"$ref": "#/control/types/Color",
 						"default": 4278227088
 					},
+                    "Label": {
+                        "type": "string",
+                        "default": "Serie"
+                    },
                     "Thickness":{
                         "type": "integer",
                         "default": 1
