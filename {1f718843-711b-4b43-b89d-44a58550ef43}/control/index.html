@@ -16,11 +16,12 @@
         </div>
 
         <script>
-            var wincc = false; //flag presenza runtime
 
             var Xarray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
             var Yarray = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
             var Color = 0xFF009090;
+            var Thickness = 1;
+            var PointSize = 5;
 
             const mychart = new Chart(document.getElementById('myChart'), {
                 type: 'line',
@@ -29,6 +30,7 @@
                         data: [],
                         borderWidth: 1,
                         borderColor: toColor(Color),
+                        radius: 5
                     }]
                 },
                 options: {
@@ -54,11 +56,21 @@
             }
 
             function updateChart() {
+                 //calcolo della lunghezza dell'array (x, y) prendendo il più corto dei 2 array passati da WinCC
                 let lim = Xarray.length < Yarray.length ? Xarray.length : Yarray.length;
+                //svuotamento array (x, y) in modo da eliminare eventuali residui
+                mychart.data.datasets[0].data.length = 0;
+                //generazione array (x, y) direttamente nel grafico chartJS
                 for (let i = 0; i < lim; i++) {
                     mychart.data.datasets[0].data[i] = {"x": Xarray[i], "y": Yarray[i]};
                 }
+                //impostazione del colore
                 mychart.data.datasets[0].borderColor = toColor(Color);
+                //impostazione dello spessore della linea
+                mychart.data.datasets[0].borderWidth = Thickness;
+                //impostazione della dimensione dei pallini
+                mychart.data.datasets[0].radius = PointSize;
+                //aggiornamento del grafico
                 mychart.update();
             }
 
@@ -78,9 +90,14 @@
                     case "Color":
                         Color = WebCC.Properties.Color;
                         break;
+                    case "Thickness":
+                        Thickness = WebCC.Properties.Thickness;
+                        break;
+                    case "PointSize":
+                        PointSize = WebCC.Properties.PointSize;
+                        break;
                 }
                 updateChart();
-                console.log("Nuovi parametri ricevuti da WinCC");
 			}
             
             //connessione con WinCC
@@ -93,7 +110,6 @@
 						} else { //l'istanza è di runtime
                             document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione nel <em>runtime</em>";
 							try {
-                                wincc = true; //attiva flag presenza runtime
                                 WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
                             } 
                             catch (error) {
@@ -102,8 +118,8 @@
 						}  
                     } else {
                         console.log("Connessione con WinCC non riuscita (sono in un browser?)");
-                        updateChart();
                     }
+                    updateChart();
                 },
                 {
                     //dichiarazione di metodi, eventi e parametri (deve coincidere con il manifest!)
@@ -116,7 +132,9 @@
                     properties: {
                         Xarray: "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
                         Yarray: "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]",
-                        Color: 0xFF009090
+                        Color: 0xFF009090,
+                        Thickness: 1,
+                        PointSize: 5
                     }
                 },
                 ["HMI"],

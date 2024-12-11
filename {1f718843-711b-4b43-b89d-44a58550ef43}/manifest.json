@@ -41,7 +41,15 @@
                     "Color": {
 						"$ref": "#/control/types/Color",
 						"default": 4278227088
-					}
+					},
+                    "Thickness":{
+                        "type": "integer",
+                        "default": 1
+                    },
+                    "PointSize":{
+                        "type": "integer",
+                        "default": 5
+                    }
                 }
             }
         },
