@@ -30,14 +30,12 @@
                 },
                 "events": {},
                 "properties": {
-                    "Xarray":{
-                        "type": "string",
-                        "default": "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
-                    },
-                    "Yarray":{
-                        "type": "string",
-                        "default": "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]"
-                    },
+                    "Xarray": {
+						"$ref": "#/control/types/Test"
+					},
+                    "Yarray": {
+						"$ref": "#/control/types/Test"
+					},
                     "Color": {
 						"$ref": "#/control/types/Color",
 						"default": 4278227088
@@ -89,6 +87,25 @@
 			"Color": {
 				"$id": "http://tia.siemens.com/wincc-unified/types/s/color",
 				"type": "number"
+			},
+            "Value": {
+                "type": "number",
+                "default": 0
+            },
+            "Test": {
+				"type": "array",
+				"items": {
+					"$ref": "#/control/types/Data"
+				}
+			},
+			"Data": {
+				"type": "object",
+				"properties": {
+					"Value": {
+						"type": "number",
+						"default": 0
+					}
+				}
 			}
         }
     }

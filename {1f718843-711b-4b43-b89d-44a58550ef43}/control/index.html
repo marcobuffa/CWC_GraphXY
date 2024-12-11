@@ -13,6 +13,8 @@
         </div>
 
         <script>
+
+            //funzione per convertire i codici colori da formato TIA a formato web
             function toColor(num) {
                 num >>>= 0;
                 var b = num & 0xFF,
@@ -23,6 +25,7 @@
                 return 'rgba(' + [r, g, b, a].join(',') + ')';
             }
 
+            //creazione del grafico con le opzioni standard
             const mychart = new Chart(document.getElementById('myChart'), {
                 type: 'line',
                 data: {
@@ -76,8 +79,14 @@
                 }
             });
 
+            /*
+            Funzione per comporre il set di dati (x, y) a partire da 2 array separati
 
+            Il formato di partenza è [x1, x2, x3] [y1, y2, y3]
+            Il formato di arrivo è un JSON [{x: x1, y: y1}, {x: x2, y: y2}, {x: x3, y: y3}]
 
+            Se i due array sono di dimensione diversa, viene scartata la parte eccedente di quello più lungo
+            */
             function buildDataArray(Xarray, Yarray) {
                  //calcolo della lunghezza dell'array (x, y) prendendo il più corto dei 2 array passati da WinCC
                 let lim = Xarray.length < Yarray.length ? Xarray.length : Yarray.length;
@@ -85,27 +94,26 @@
                 mychart.data.datasets[0].data.length = 0;
                 //generazione array (x, y) direttamente nel grafico chartJS
                 for (let i = 0; i < lim; i++) {
-                    mychart.data.datasets[0].data[i] = {"x": Xarray[i], "y": Yarray[i]};
+                    mychart.data.datasets[0].data[i] = {"x": Xarray[i].Value, "y": Yarray[i].Value};
                 }
             }
 
-            //Callback nuovi parametri da WinCC
+            //funzione callback che viene richiamata quando WinCC modifica uno dei parametri
             function dataFromWinCC(){
-				buildDataArray(JSON.parse(WebCC.Properties.Xarray), JSON.parse(WebCC.Properties.Yarray));
-                mychart.data.datasets[0].borderColor = toColor(WebCC.Properties.Color);
-                mychart.data.datasets[0].backgroundColor = toColor(WebCC.Properties.Color);
-                mychart.data.datasets[0].label = WebCC.Properties.Label;
-                mychart.options.plugins.legend.display = !(mychart.data.datasets[0].label.length === 0);
-                mychart.data.datasets[0].borderWidth = WebCC.Properties.Thickness;
-                mychart.data.datasets[0].radius = WebCC.Properties.PointSize;
+				buildDataArray(WebCC.Properties.Xarray, WebCC.Properties.Yarray); //costruzione nuovo array (x, y)
+                mychart.data.datasets[0].borderColor = toColor(WebCC.Properties.Color); //impostazione colore linee
+                mychart.data.datasets[0].backgroundColor = toColor(WebCC.Properties.Color); //impostazione colore riempimento punti
+                mychart.data.datasets[0].label = WebCC.Properties.Label; //impostazione legenda
+                mychart.options.plugins.legend.display = !(mychart.data.datasets[0].label.length === 0);  //impostazione visibilità legenda (se stringa vuota, viene nascosta)
+                mychart.data.datasets[0].borderWidth = WebCC.Properties.Thickness; //impostazione spessore linee
+                mychart.data.datasets[0].radius = WebCC.Properties.PointSize; //impostazione diametro punti
 
-                if (WebCC.Properties.AnimationTime != 0){
-                    mychart.options.animation.duration = WebCC.Properties.AnimationTime;
-                } else {
+                if (WebCC.Properties.AnimationTime != 0)  //impostazione animazione in ms (se 0 viene disabilitata)
+                    mychart.options.animation = {duration: WebCC.Properties.AnimationTime};
+                else
                     mychart.options.animation = false;
-                }
 
-                if (WebCC.Properties.Xmin != WebCC.Properties.Xmax){
+                if (WebCC.Properties.Xmin != WebCC.Properties.Xmax){ //impostazione min e max asse X (se uguali il grafico si adatta al dataset)
                     mychart.options.scales.x.min = WebCC.Properties.Xmin;
                     mychart.options.scales.x.max = WebCC.Properties.Xmax;
                 } else {
@@ -113,7 +121,7 @@
                     mychart.options.scales.x.max = undefined;
                 }
 
-                if (WebCC.Properties.Ymin != WebCC.Properties.Ymax){
+                if (WebCC.Properties.Ymin != WebCC.Properties.Ymax){ //impostazione min e max asse Y (se uguali il grafico si adatta al dataset)
                     mychart.options.scales.y.min = WebCC.Properties.Ymin;
                     mychart.options.scales.y.max = WebCC.Properties.Ymax;
                 } else {
@@ -121,17 +129,17 @@
                     mychart.options.scales.y.max = undefined;
                 }
 
-                if (WebCC.Properties.Xlabel.length == 0)
+                if (WebCC.Properties.Xlabel.length == 0) //impostazione etichetta asse X (se stringa vuota viene nascosta)
                     mychart.options.scales.x.title = undefined;
                 else
                     mychart.options.scales.x.title = {display: true, text: WebCC.Properties.Xlabel};
 
-                if (WebCC.Properties.Ylabel.length == 0)
+                if (WebCC.Properties.Ylabel.length == 0) //impostazione etichetta asse Y (se stringa vuota viene nascosta)
                     mychart.options.scales.y.title = undefined;
                 else
                     mychart.options.scales.y.title = {display: true, text: WebCC.Properties.Ylabel};
-                
-                mychart.update();
+
+                mychart.update(); //aggiornamento grafico con nuovi valori
 			}
             
             //connessione con WinCC
@@ -140,11 +148,11 @@
                     if (result) { //c'è un'istanza di WinCC in esecuzione
                         console.log("Connessione con WinCC avvenuta con successo");
                          try {
-                            WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
+                            WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi parametri da WinCC
                         } catch (error) {
                             console.log(error);
                         }
-                        dataFromWinCC();
+                        dataFromWinCC(); //aggiornamento iniziale grafico (in modo che appaia corretto anche se i parametri non sono ancora cambiati)
                     } else {
                         console.log("Connessione con WinCC non riuscita (sono in un browser?)");
                     }
@@ -158,8 +166,8 @@
                     },
                     events: [],
                     properties: {
-                        Xarray: "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
-                        Yarray: "[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]",
+                        Xarray: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                        Yarray: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2],
                         Color: 0xFF009090,
                         Label: "Serie",
                         Thickness: 1,
