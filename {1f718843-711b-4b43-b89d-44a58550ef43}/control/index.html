@@ -9,29 +9,46 @@
     </head>
     <body>
         <div>
-            <p id="Connection">Questo CWC è in esecuzione in un <em>browser</em></p>
-        </div>
-        <div>
             <canvas id="myChart"></canvas>
         </div>
 
         <script>
+            function toColor(num) {
+                num >>>= 0;
+                var b = num & 0xFF,
+                g = (num & 0xFF00) >>> 8,
+                r = (num & 0xFF0000) >>> 16,
+                a = ((num & 0xFF000000) >>> 24) / 255;
 
-            var Xarray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-            var Yarray = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
-            var Color = 0xFF009090;
-            var Label = "Serie";
-            var Thickness = 1;
-            var PointSize = 5;
+                return 'rgba(' + [r, g, b, a].join(',') + ')';
+            }
 
             const mychart = new Chart(document.getElementById('myChart'), {
                 type: 'line',
                 data: {
                     datasets: [{
                         label: "",
-                        data: [],
+                        data: [
+                            {x: 0, y: 1},
+                            {x: 1, y: 2},
+                            {x: 2, y: 1},
+                            {x: 3, y: 2},
+                            {x: 4, y: 1},
+                            {x: 5, y: 2},
+                            {x: 6, y: 1},
+                            {x: 7, y: 2},
+                            {x: 8, y: 1},
+                            {x: 9, y: 2},
+                            {x: 10, y: 1},
+                            {x: 11, y: 2},
+                            {x: 12, y: 1},
+                            {x: 13, y: 2},
+                            {x: 14, y: 1},
+                            {x: 15, y: 2},
+                        ],
                         borderWidth: 1,
-                        borderColor: toColor(Color),
+                        borderColor: toColor(0xFF009090),
+                        backgroundColor: toColor(0xFF009090),
                         radius: 5
                     }]
                 },
@@ -46,23 +63,15 @@
                     },
                     plugins: {
                         legend: {
-                            display: !(Label.length === 0)
+                            display: false
                         }
                     }
                 }
             });
 
-            function toColor(num) {
-                num >>>= 0;
-                var b = num & 0xFF,
-                g = (num & 0xFF00) >>> 8,
-                r = (num & 0xFF0000) >>> 16,
-                a = ((num & 0xFF000000) >>> 24) / 255;
 
-                return 'rgba(' + [r, g, b, a].join(',') + ')';
-            }
 
-            function updateChart() {
+            function buildDataArray(Xarray, Yarray) {
                  //calcolo della lunghezza dell'array (x, y) prendendo il più corto dei 2 array passati da WinCC
                 let lim = Xarray.length < Yarray.length ? Xarray.length : Yarray.length;
                 //svuotamento array (x, y) in modo da eliminare eventuali residui
@@ -71,45 +80,18 @@
                 for (let i = 0; i < lim; i++) {
                     mychart.data.datasets[0].data[i] = {"x": Xarray[i], "y": Yarray[i]};
                 }
-                //impostazione del colore
-                mychart.data.datasets[0].borderColor = toColor(Color);
-                //impostazione dell'etichetta della serie
-                mychart.data.datasets[0].label = Label;
-                //impostazione dello spessore della linea
-                mychart.data.datasets[0].borderWidth = Thickness;
-                //impostazione della dimensione dei pallini
-                mychart.data.datasets[0].radius = PointSize;
-                //aggiornamento del grafico
-                mychart.update();
             }
 
             //Callback nuovi parametri da WinCC
-            function dataFromWinCC(data){
-                //data.value --> nuovo valore
-                //data.key --> nome del parametro aggiornato
-                console.log("Nuovo parametro ricevuto da WinCC:");
-                console.log(data);
-				switch (data.key) {
-                    case "Xarray":
-                        Xarray = JSON.parse(WebCC.Properties.Xarray);
-                        break;
-                    case "Yarray":
-                        Yarray = JSON.parse(WebCC.Properties.Yarray);
-                        break;
-                    case "Color":
-                        Color = WebCC.Properties.Color;
-                        break;
-                    case "Label":
-                        Label = WebCC.Properties.Label;
-                        break;
-                    case "Thickness":
-                        Thickness = WebCC.Properties.Thickness;
-                        break;
-                    case "PointSize":
-                        PointSize = WebCC.Properties.PointSize;
-                        break;
-                }
-                updateChart();
+            function dataFromWinCC(){
+				buildDataArray(JSON.parse(WebCC.Properties.Xarray), JSON.parse(WebCC.Properties.Yarray));
+                mychart.data.datasets[0].borderColor = toColor(WebCC.Properties.Color);
+                mychart.data.datasets[0].backgroundColor = toColor(WebCC.Properties.Color);
+                mychart.data.datasets[0].label = WebCC.Properties.Label;
+                mychart.options.plugins.legend.display = !(mychart.data.datasets[0].label.length === 0);
+                mychart.data.datasets[0].borderWidth = WebCC.Properties.Thickness;
+                mychart.data.datasets[0].radius = WebCC.Properties.PointSize;
+                mychart.update();
 			}
             
             //connessione con WinCC
@@ -117,21 +99,15 @@
                 function(result) {
                     if (result) { //c'è un'istanza di WinCC in esecuzione
                         console.log("Connessione con WinCC avvenuta con successo");
-                        if (WebCC.isDesignMode) { //l'istanza è di ingegneria (TIA Portal)
-							document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione in <em>ingegneria (TIA Portal)</em>";
-						} else { //l'istanza è di runtime
-                            document.getElementById('Connection').innerHTML = "Questo CWC è in esecuzione nel <em>runtime</em>";
-						}
-                        try {
+                         try {
                             WebCC.onPropertyChanged.subscribe(dataFromWinCC); //registrazione callback chiamata quando arrivano nuovi dati da WinCC
-                        } 
-                        catch (error) {
+                        } catch (error) {
                             console.log(error);
                         }
+                        dataFromWinCC();
                     } else {
                         console.log("Connessione con WinCC non riuscita (sono in un browser?)");
                     }
-                    updateChart();
                 },
                 {
                     //dichiarazione di metodi, eventi e parametri (deve coincidere con il manifest!)
@@ -147,6 +123,7 @@
                         Color: 0xFF009090,
                         Label: "Serie",
                         Thickness: 1,
+
                         PointSize: 5
                     }
                 },
