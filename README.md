@@ -28,13 +28,13 @@ Based on [chartJS](https://chartjs.org).
 6. Enjoy
 
 ## How to directly download this CWC (if you are in a hurry):
-1. Download from [here]({1f718843-711b-4b43-b89d-44a58550ef43}/build/{1f718843-711b-4b43-b89d-44a58550ef43}.zip)
+1. Download from [here](build/{1f718843-711b-4b43-b89d-44a58550ef43}.zip)
 2. Copy the **{1f718843-711b-4b43-b89d-44a58550ef43}.zip** file in **C:\Program Files\Siemens\Automation\Portal V1x\Data\Hmi\CustomControls** folder
 3. Refresh the **My Controls** right side pane in the TIA Portal WinCC Unified screen editor
 4. Enjoy
 
 ## May I have a TIA Portal project example?
-Sure: just download it from [here]({1f718843-711b-4b43-b89d-44a58550ef43}/examples/TIAexample.zap19) (TIA V19)
+Sure: just download it from [here](examples/TIAexample.zap19) (TIA V19)
 The project needs the CWC to be installed before using (follow instructions above for downloading and installing)
 
 ## Documentation:
