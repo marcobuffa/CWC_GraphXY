@@ -53,6 +53,34 @@
                     "PointSize":{
                         "type": "integer",
                         "default": 5
+                    },
+                    "AnimationTime":{
+                        "type": "integer",
+                        "default": 100
+                    },
+                    "Xmin":{
+                        "type": "number",
+                        "default": 1
+                    },
+                    "Xmax":{
+                        "type": "number",
+                        "default": 1
+                    },
+                    "Ymin":{
+                        "type": "number",
+                        "default": 1
+                    },
+                    "Ymax":{
+                        "type": "number",
+                        "default": 1
+                    },
+                    "Xlabel":{
+                        "type": "string",
+                        "default": "Etichetta X"
+                    },
+                    "Ylabel":{
+                        "type": "string",
+                        "default": "Etichetta Y"
                     }
                 }
             }

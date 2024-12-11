@@ -55,16 +55,23 @@
                 options: {
                     scales: {
                         y: {
-                            type: 'linear'
+                            type: 'linear',
                         },
                         x: {
-                            type: 'linear'
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
                         }
                     },
                     plugins: {
                         legend: {
                             display: false
                         }
+                    },
+                    animation: {
+                        duration: 100,
                     }
                 }
             });
@@ -91,6 +98,39 @@
                 mychart.options.plugins.legend.display = !(mychart.data.datasets[0].label.length === 0);
                 mychart.data.datasets[0].borderWidth = WebCC.Properties.Thickness;
                 mychart.data.datasets[0].radius = WebCC.Properties.PointSize;
+
+                if (WebCC.Properties.AnimationTime != 0){
+                    mychart.options.animation.duration = WebCC.Properties.AnimationTime;
+                } else {
+                    mychart.options.animation = false;
+                }
+
+                if (WebCC.Properties.Xmin != WebCC.Properties.Xmax){
+                    mychart.options.scales.x.min = WebCC.Properties.Xmin;
+                    mychart.options.scales.x.max = WebCC.Properties.Xmax;
+                } else {
+                    mychart.options.scales.x.min = undefined;
+                    mychart.options.scales.x.max = undefined;
+                }
+
+                if (WebCC.Properties.Ymin != WebCC.Properties.Ymax){
+                    mychart.options.scales.y.min = WebCC.Properties.Ymin;
+                    mychart.options.scales.y.max = WebCC.Properties.Ymax;
+                } else {
+                    mychart.options.scales.y.min = undefined;
+                    mychart.options.scales.y.max = undefined;
+                }
+
+                if (WebCC.Properties.Xlabel.length == 0)
+                    mychart.options.scales.x.title = undefined;
+                else
+                    mychart.options.scales.x.title = {display: true, text: WebCC.Properties.Xlabel};
+
+                if (WebCC.Properties.Ylabel.length == 0)
+                    mychart.options.scales.y.title = undefined;
+                else
+                    mychart.options.scales.y.title = {display: true, text: WebCC.Properties.Ylabel};
+                
                 mychart.update();
 			}
             
@@ -123,8 +163,14 @@
                         Color: 0xFF009090,
                         Label: "Serie",
                         Thickness: 1,
-
-                        PointSize: 5
+                        PointSize: 5,
+                        AnimationTime: 100,
+                        Xmin: 0,
+                        Xmax: 15,
+                        Ymin: 0,
+                        Ymax: 3,
+                        Xlabel: "Etichette X",
+                        Ylabel: "Etichette Y"
                     }
                 },
                 ["HMI"],
